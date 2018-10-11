@@ -1,5 +1,2 @@
-def main(wat):
-    if __name__ == '__main__':
-        main(wat)
+def se(wat):
     print(wat)
-    return()

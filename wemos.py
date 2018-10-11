@@ -1,11 +1,12 @@
 # Import Libraries
-import network
 import time
 import conf
 # Set parameters
-ssid = conf.wifi["ssid"]
-pwd = conf.wifi["pwd"]
+my_ssid = conf.wifi["ssid"]
+my_pwd = conf.wifi["pwd"]
 # functions
+
+
 # Connect to wifi
 def do_connect(ssid,pwd):
     import network
@@ -19,5 +20,5 @@ def do_connect(ssid,pwd):
     print('network config:', sta_if.ifconfig())
 # main
 def main():
-    do_connect(ssid,pwd)
+    do_connect(my_ssid,my_pwd)
 main()

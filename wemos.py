@@ -1,5 +1,5 @@
 # Import Libraries
-import time
+import utime
 import conf
 # Set parameters
 my_ssid = conf.wifi["ssid"]
@@ -16,9 +16,18 @@ def do_connect(ssid,pwd):
         sta_if.active(True)
         sta_if.connect(ssid, pwd)
         while not sta_if.isconnected():
-            time.sleep(0.5)
+            utime.sleep_ms(200)
     print('network config:', sta_if.ifconfig())
+
+
+# Setup Mqtt
+
+
 # main
-def main():
+def main(state):
+    from machine import Pin
     do_connect(my_ssid,my_pwd)
-main()
+    led = Pin(2, Pin.OUT, value=1)
+    led.value(state)
+    state = 1 - state
+main(0)

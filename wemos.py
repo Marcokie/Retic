@@ -2,6 +2,7 @@
 import conf
 import network
 import utime
+import machine
 from machine import Pin
 import ubinascii
 from umqtt.simple import MQTTClient
@@ -11,7 +12,10 @@ my_ssid = conf.wifi["ssid"]
 my_pwd = conf.wifi["pwd"]
 SERVER = conf.adafruit["server"]
 TOPIC = conf.adafruit["topic"]
-
+CLIENT_ID = ubinascii.hexlify(machine.unique_id())
+USER = bytearray(conf.adafruit["user"])
+KEY = bytearray(conf.adafruit["key"])
+state = 1
 
 # functions
 # Connect to wifi
@@ -35,11 +39,11 @@ def sub_cb(topic, msg):
 def main():
     # Connect to wifi
     do_connect(my_ssid,my_pwd)
-
+    utime.sleep(3)
     # Print MQTT message
     print("Connecting to %s, subscribed to %s topic" % (SERVER, TOPIC))
-    CLIENT_ID = ubinascii.hexlify(machine.unique_id())
-    c = MQTTClient(CLIENT_ID, SERVER)
+    #c = MQTTClient(CLIENT_ID, SERVER)
+    c = MQTTClient(CLIENT_ID, SERVER, user=USER, password=KEY, port=1883)
     c.set_callback(sub_cb)
     c.connect()
     c.subscribe(TOPIC)
@@ -56,7 +60,3 @@ def main():
     led = Pin(2, Pin.OUT, value=1)
     led.value(state)
     state = 1 - state
-
-# Run main function
-if __name__ == __main__:
-    main()

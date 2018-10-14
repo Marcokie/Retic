@@ -16,6 +16,7 @@ CLIENT_ID = ubinascii.hexlify(machine.unique_id())
 USER = bytearray(conf.adafruit["user"])
 KEY = bytearray(conf.adafruit["key"])
 state = 1
+led = Pin(2, Pin.OUT, value=1)
 
 # functions
 # Connect to wifi
@@ -33,6 +34,10 @@ def do_connect(ssid,pwd):
 # Setup Mqtt
 def sub_cb(topic, msg):
     print((topic, msg))
+    if msg == b'ON':
+        led.value(0)
+    if msg == b'OFF':
+        led.value(1)
 
 
 # Main function

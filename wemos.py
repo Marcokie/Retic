@@ -70,16 +70,16 @@ def main():
             # Connect to wifi
             do_connect(my_ssid,my_pwd)
             print("Connected to %s, subscribed to %s topic" % (SERVER, TOPIC))
-            while not stop:
-                c.check_msg()  # execute call back to field timer requests
-                for x in gpio.values():  # Set pin values
-                    if x[1] > 0:
-                        x[0].value(1)
-                    else:
-                        x[0].value(0)
-                utime.wait(5)
-                for x in gpio.values():  #decrease timers
-                    x[1] = max(0,x[1]-5)
+        while not stop:
+            c.check_msg()  # execute call back to field timer requests
+            for x in gpio.values():  # Set pin values
+                if x[1] > 0:
+                    x[0].value(1)
+                else:
+                    x[0].value(0)
+            utime.wait(5)
+            for x in gpio.values():  #decrease timers
+                x[1] = max(0,x[1]-5)
     except Exception as e:
         print(e)
     finally:

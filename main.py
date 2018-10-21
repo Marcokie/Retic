@@ -1,11 +1,5 @@
-import time
-from machine import Pin
+import wemos
 
-led = Pin(2, Pin.OUT)
 
-while True:
-	if led.value():
-		led.off()
-	else:
-		led.on()
-	time.sleep_ms(250)
+# Run wemos function
+wemos.main()

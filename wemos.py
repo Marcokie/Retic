@@ -23,8 +23,7 @@ TOPIC = conf.adafruit["topic"]
 CLIENT_ID = ubinascii.hexlify(machine.unique_id())
 USER = bytearray(conf.adafruit["user"])
 KEY = bytearray(conf.adafruit["key"])
-# Board params
-led = Pin(2, Pin.OUT, value=1)
+freq = conf.operation["freq"]
 # Set gpio dictionary
 gpio = {}
 for k,v in conf.zones.items():
@@ -60,18 +59,20 @@ def sub_cb(topic, msg):
 
 # Main function
 def main():
+    # [Re]connect Loop
+    while not sta_if.isconnected():
+        # Connect to wifi
+        do_connect(my_ssid,my_pwd)
+        print("Connected to %s, subscribed to %s topic" % (SERVER, TOPIC))
     # Subscribe to MQTT message
     c = MQTTClient(CLIENT_ID, SERVER, user=USER, password=KEY, port=1883)
     c.set_callback(sub_cb)
     c.connect()
     c.subscribe(TOPIC)
-    # [Re]connect Loop
-    print("Connection status %s" % sta_if.isconnected())
+    # Board params
+    blink = 0
+    led = Pin(2, Pin.OUT, value=1)
     try:
-        while not sta_if.isconnected():
-            # Connect to wifi
-            do_connect(my_ssid,my_pwd)
-            print("Connected to %s, subscribed to %s topic" % (SERVER, TOPIC))
         while 1:
             print("checking messages")
             c.check_msg()  # execute call back to field timer requests
@@ -81,10 +82,12 @@ def main():
                 else:
                     x[0].value(1)
             print(gpio)
-            utime.sleep(5)
-            print("Decreasing pin values")
-            for x in gpio.values():  # decrease timers
-                x[1] = max(0,x[1]-5)
+            for x in range(int(freq/.25)):
+                blink = 1 - blink
+                led(blink)
+                utime.sleep(.25)
+                for x in gpio.values():  # decrease timers
+                    x[1] = max(0,x[1]-.25)
     except Exception as e:
         print(e)
     finally:

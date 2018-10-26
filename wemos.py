@@ -5,7 +5,7 @@ import utime
 import machine
 from machine import Pin
 import ubinascii
-from umqtt.simple import MQTTClient
+from umqtt.robust import MQTTClient
 import json
 import webrepl
 
@@ -82,31 +82,34 @@ def main():
         print("Connected to %s, subscribed to %s topic" % (SERVER, TOPIC))
     # Subscribe to MQTT message
     c = MQTTClient(CLIENT_ID, SERVER, user=USER, password=KEY, port=1883)
-    c.set_callback(sub_cb)
-    c.connect()
+    val = c.set_callback(sub_cb)
+    print("callback set: " + str(val))
+    val = c.connect()
+    print("MQTT Connection: " + str(val))
     c.subscribe(TOPIC)
     # Board params
     blink = 0
+    tel = 0
     led = Pin(2, Pin.OUT, value=1)
-    try:
-        while 1:
-            print("retic v1.2")
-            c.check_msg()  # execute call back to field timer requests
-            for x in gpio.values():  # Set pin values
-                if x[2] > 0 and x[1] == 0:
-                    x[0].value(0)
-                else:
-                    x[0].value(1)
-            print(gpio)
-            for x in range(int(freq/bf)):
-                blink = 1 - blink
-                led(blink)
-                utime.sleep(bf)
-                for x in gpio.values():  # decrease waits and timers
-                    x[1] = max(0,x[1]-bf)
-                    if x[1] == 0:
-                        x[2] = max(0,x[2]-bf)
-    except Exception as e:
-        print(e)
-    finally:
-        c.disconnect()
+    #try:
+    while not c.connect():
+        tel = tel + 1
+        print("Retic v1.7 iteration " + str(tel))
+        c.check_msg()  # execute call back to field timer requests
+        for x in gpio.values():  # Set pin values
+            if x[2] > 0 and x[1] == 0:
+                x[0].value(0)
+            else:
+                x[0].value(1)
+        print(gpio)
+        for x in range(int(freq/bf)):
+            blink = 1 - blink
+            led(blink)
+            utime.sleep(bf)
+            for x in gpio.values():  # decrease waits and timers
+                x[1] = max(0,x[1]-bf)
+                if x[1] == 0:
+                    x[2] = max(0,x[2]-bf)
+    # except OSError as e:
+    #     print("message check error" + str(e))
+    #     machine.reset()

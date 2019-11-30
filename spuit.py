@@ -15,9 +15,9 @@ rtc = RTC()
 
 def settime(lt): # (y,m,d,w,h,mi):
     if (all(isinstance(x,int) for x in lt) and len(lt) == 6):
-        rtc.datetime(tuple(lt + [0,0])
+        rtc.datetime(tuple(lt + [0,0]))
     else:
-        log.write('{} is incorrect. Please enter list with y,,d,w,h,mi'.format(lt),'ERROR')
+       log.write('{} is incorrect. Please enter list with y,,d,w,h,mi'.format(lt),'ERROR')
 
 def setpins(active=[]):
     """Set and clear pins for configured zones.
